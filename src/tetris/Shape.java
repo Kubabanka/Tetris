@@ -158,7 +158,7 @@ public class Shape {
      * @return Obrocony klocek.
      */
     public Shape rotate() {
-        if (pieceShape == Tetrominoes.SquareShape)
+        if (pieceShape == Tetrominoes.SquareShape || pieceShape == Tetrominoes.DotShape)
             return this;
 
         Shape result = new Shape();
