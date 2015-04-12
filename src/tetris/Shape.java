@@ -129,8 +129,8 @@ public class Shape {
     }
 
     /**
-     *
-     * @return Minimalna wartosc wspolrzednej x.
+     * Metoda zwracająca minimalną wartość współrzędnej x.
+     * @return Minimalną wartość współrzędnej x.
      */
     public int minX() {
         int m = coords[0][0];
@@ -141,8 +141,8 @@ public class Shape {
     }
 
     /**
-     *
-     * @return Minimalna wartosc wspolrzednej y.
+     * Metoda zwracająca minimalną wartość współrzędnej y.
+     * @return Minimalną wartość współrzędnej y.
      */
     public int minY() {
         int m = coords[0][1];
