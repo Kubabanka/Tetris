@@ -11,7 +11,7 @@ public class Shape {
     /**
      * Zmienna wyliczeniowa przechowujaca wszystkie mozliwe ksztalty klockow.
      **/
-    enum Tetrominoes {
+    enum TetroShapes {
         NoShape, ZShape, SShape, LineShape,
         TShape, SquareShape, LShape, MirroredLShape, DotShape, SlashShape
     };
@@ -19,28 +19,28 @@ public class Shape {
     /**
      * Zmienna mowiaca jaki ksztalt ma dany klocek.
      */
-    private Tetrominoes pieceShape;
+    private TetroShapes pieceShape;
 
     /**
      * Tablica dzieki ktorej mozemy rysowac klocki.
      * Przechowuje wspolrzedne poszczegolnych blokow klocka.
      */
-    private int coords[][];
+    private int coordinates[][];
 
     /**
-     * Tablica przechowujaca wspolrzedne sluzace do nadawania ksztaltu klockom.
-     * Pierwszy nawias odpowiada za typ klocka okreslany przez enum <code>Tetrominoes</code>.
+     * Tablica przechowujaca współrzędne sluzace do nadawania ksztaltu klockom.
+     * Pierwszy nawias odpowiada za typ klocka okreslany przez enum <code>TetroShapes</code>.
      * Dwa pozostale to wspolrzedne blokow tworzacych klocki.
      */
-    private int[][][] coordsTable;
+    private int[][][] shapeTable;
 
     /**
-     * Podstawowy konstruktor. Wypelnia on tabee <code>coords</code> 0 i ustawia ksztalt klocka na <code>NoShape</code>.
+     * Podstawowy konstruktor. Wypelnia on tabee <code>coordinates</code> 0 i ustawia ksztalt klocka na <code>NoShape</code>.
      */
     public Shape() {
 
-        coords = new int[4][2];
-        setShape(Tetrominoes.NoShape);
+        coordinates = new int[4][2];
+        setShape(TetroShapes.NoShape);
 
     }
 
@@ -48,10 +48,10 @@ public class Shape {
      *Metoda ustawiajaca ksztalt klocka na ten podany w parametrze.
      * @param shape oczekiwany ksztalt klocka
      */
-    public void setShape(Tetrominoes shape) {
+    public void setShape(TetroShapes shape) {
 
         //ustalanie wspolrzednych poszczegolnych ksztaltow
-        coordsTable = new int[][][]{
+        shapeTable = new int[][][]{
                 {{0, 0}, {0, 0}, {0, 0}, {0, 0}},//NoShape
                 {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},//ZShape
                 {{0, -1}, {0, 0}, {1, 0}, {1, 1}},//SShape
@@ -67,7 +67,7 @@ public class Shape {
         //ustalanie ksztaltu aktualnego klocka i==x || y j==ktore
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 2; ++j) {
-                coords[i][j] = coordsTable[shape.ordinal()][i][j];
+                coordinates[i][j] = shapeTable[shape.ordinal()][i][j];
             }
         }
         pieceShape = shape;
@@ -80,7 +80,7 @@ public class Shape {
      * @param x wartosc na jaka… zmieniamy obecna… wartosc
      */
     private void setX(int index, int x) {
-        coords[index][0] = x;
+        coordinates[index][0] = x;
     }
 
     /**
@@ -89,7 +89,7 @@ public class Shape {
      * @param y wartosc na jaka… zmieniamy obecna… wartosc
      */
     private void setY(int index, int y) {
-        coords[index][1] = y;
+        coordinates[index][1] = y;
     }
 
     /**
@@ -98,7 +98,7 @@ public class Shape {
      * @return wartosc wspolrzednej x
      */
     public int x(int index) {
-        return coords[index][0];
+        return coordinates[index][0];
     }
 
     /**
@@ -107,14 +107,14 @@ public class Shape {
      * @return Wartosc wspolrzednej y
      */
     public int y(int index) {
-        return coords[index][1];
+        return coordinates[index][1];
     }
 
     /**
      * Metoda zwracajaca wartosc wspolrzednej x bloku klocka
      * @return Ksztalt klocka
      */
-    public Tetrominoes getShape() {
+    public TetroShapes getShape() {
         return pieceShape;
     }
 
@@ -124,7 +124,7 @@ public class Shape {
     public void setRandomShape() {
         Random r = new Random();
         int x = Math.abs(r.nextInt()) % 9 + 1;
-        Tetrominoes[] values = Tetrominoes.values();
+        TetroShapes[] values = TetroShapes.values();
         setShape(values[x]);
     }
 
@@ -133,9 +133,9 @@ public class Shape {
      * @return Minimalną wartość współrzędnej x.
      */
     public int minX() {
-        int m = coords[0][0];
+        int m = coordinates[0][0];
         for (int i = 0; i < 4; i++) {
-            m = Math.min(m, coords[i][0]);
+            m = Math.min(m, coordinates[i][0]);
         }
         return m;
     }
@@ -145,9 +145,9 @@ public class Shape {
      * @return Minimalną wartość współrzędnej y.
      */
     public int minY() {
-        int m = coords[0][1];
+        int m = coordinates[0][1];
         for (int i = 0; i < 4; i++) {
-            m = Math.min(m, coords[i][1]);
+            m = Math.min(m, coordinates[i][1]);
         }
         return m;
     }
@@ -159,7 +159,7 @@ public class Shape {
      * @return Obrocony klocek.
      */
     public Shape rotate() {
-        if (pieceShape == Tetrominoes.SquareShape || pieceShape == Tetrominoes.DotShape)
+        if (pieceShape == TetroShapes.SquareShape || pieceShape == TetroShapes.DotShape)
             return this;
 
         Shape result = new Shape();

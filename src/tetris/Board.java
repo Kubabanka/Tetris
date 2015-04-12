@@ -15,8 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import tetris.Shape.Tetrominoes;
-
 
 /**
  * Klasa odwzorowywująca planszę do gry.
@@ -25,17 +23,15 @@ import tetris.Shape.Tetrominoes;
 public class Board extends JPanel implements ActionListener {
 
 
-    /* TODO wczytywanie z pliku, power-upy. */
-
     /**
      * Stała mówiąca ile bloków szerokości ma plansza.
      */
-    int BoardWidth = 10;
+    int BoardWidth;
 
     /**
      * Stała mówiąca ile bloków wysokości ma plansza.
      */
-    int BoardHeight = 22;
+    int BoardHeight;
 
     /**
      * Timer służący do tworzenia zdarzeń.
@@ -65,12 +61,12 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Aktualna współrzędna x na planszy
      */
-    int curX = 0;
+    int currentX = 0;
 
     /**
      * Aktualna współrzędna y na planszy
      */
-    int curY = 0;
+    int currentY = 0;
 
     /**
      * Ilość punktów za skasowanie jednej linii.
@@ -115,12 +111,12 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Aktualny spadający klocek.
      */
-    Shape curPiece;
+    Shape currentPiece;
 
     /**
      * Tablica klocków które skończyły opadanie.
      */
-    Tetrominoes[] board;
+    Shape.TetroShapes[] board;
 
     /**
      * Nazwa zawodnika.
@@ -140,13 +136,13 @@ public class Board extends JPanel implements ActionListener {
         } catch (Exception e) {
             System.out.println("Blad wczytania pliku");
         }
-        curPiece = new Shape();
+        currentPiece = new Shape();
         timer = new Timer(speed, this);
         timer.start();
         pointsbar = parent.getSidePanel().getPointsbar();
         statusbar = parent.getSidePanel().getStatusBar();
-        board = new Tetrominoes[BoardWidth * BoardHeight];
-        addKeyListener(new TAdapter());
+        board = new Shape.TetroShapes[BoardWidth * BoardHeight];
+        addKeyListener(new MyAdapter());
         clearBoard();
     }
 
@@ -230,7 +226,7 @@ public class Board extends JPanel implements ActionListener {
      *  @param y  współrzędna y planszy
      * @return Kształt z jakiego pochodzi blok klocka na współrzędnych (x,y)
      */
-    Tetrominoes shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
+    Shape.TetroShapes shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
 
     /**
      * Metoda rozpoczynająca grę.
@@ -285,20 +281,20 @@ public class Board extends JPanel implements ActionListener {
 
         for (int i = 0; i < BoardHeight; ++i) {
             for (int j = 0; j < BoardWidth; ++j) {
-                Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
-                if (shape != Tetrominoes.NoShape)
-                    drawSquare(g, 0 + j * squareWidth(),
+                Shape.TetroShapes shape = shapeAt(j, BoardHeight - i - 1);
+                if (shape != Shape.TetroShapes.NoShape)
+                    drawBlock(g, 0 + j * squareWidth(),
                             boardTop + i * squareHeight(), shape);
             }
         }
 
-        if (curPiece.getShape() != Tetrominoes.NoShape) {
+        if (currentPiece.getShape() != Shape.TetroShapes.NoShape) {
             for (int i = 0; i < 4; ++i) {
-                int x = curX + curPiece.x(i);
-                int y = curY - curPiece.y(i);
-                drawSquare(g, 0 + x * squareWidth(),
+                int x = currentX + currentPiece.x(i);
+                int y = currentY - currentPiece.y(i);
+                drawBlock(g, 0 + x * squareWidth(),
                         boardTop + (BoardHeight - y - 1) * squareHeight(),
-                        curPiece.getShape());
+                        currentPiece.getShape());
             }
         }
     }
@@ -308,9 +304,9 @@ public class Board extends JPanel implements ActionListener {
      */
     private void dropDown()
     {
-        int newY = curY;
+        int newY = currentY;
         while (newY > 0) {
-            if (!tryMove(curPiece, curX, newY - 1))
+            if (!tryMoving(currentPiece, currentX, newY - 1))
                 break;
             --newY;
         }
@@ -322,7 +318,7 @@ public class Board extends JPanel implements ActionListener {
      */
     private void oneLineDown()
     {
-        if (!tryMove(curPiece, curX, curY - 1))
+        if (!tryMoving(currentPiece, currentX, currentY - 1))
             pieceDropped();
     }
 
@@ -332,7 +328,7 @@ public class Board extends JPanel implements ActionListener {
     private void clearBoard()
     {
         for (int i = 0; i < BoardHeight * BoardWidth; ++i)
-            board[i] = Tetrominoes.NoShape;
+            board[i] = Shape.TetroShapes.NoShape;
     }
 
     /**
@@ -342,9 +338,9 @@ public class Board extends JPanel implements ActionListener {
     private void pieceDropped()
     {
         for (int i = 0; i < 4; ++i) {
-            int x = curX + curPiece.x(i);
-            int y = curY - curPiece.y(i);
-            board[(y * BoardWidth) + x] = curPiece.getShape();
+            int x = currentX + currentPiece.x(i);
+            int y = currentY - currentPiece.y(i);
+            board[(y * BoardWidth) + x] = currentPiece.getShape();
         }
 
         removeFullLines();
@@ -358,15 +354,15 @@ public class Board extends JPanel implements ActionListener {
      */
     private void newPiece()
     {
-        curPiece.setRandomShape();
-        curX = BoardWidth / 2  + curPiece.minX();
-        curY = BoardHeight - 1 + curPiece.minY();
+        currentPiece.setRandomShape();
+        currentX = BoardWidth / 2  + currentPiece.minX();
+        currentY = BoardHeight - 1 + currentPiece.minY();
 
-        if (!tryMove(curPiece, curX, curY)) {
-            curPiece.setShape(Tetrominoes.NoShape);
+        if (!tryMoving(currentPiece, currentX, currentY)) {
+            currentPiece.setShape(Shape.TetroShapes.NoShape);
             timer.stop();
             isStarted = false;
-            statusbar.setText("<html>GAME OVER!");
+            statusbar.setText("GAME OVER!");
             pointsbar.setText("Score:" + score);
         }
     }
@@ -379,14 +375,14 @@ public class Board extends JPanel implements ActionListener {
      * @param newY nowa współrzędna y na planszy
      * @return <code>true</code> jeżeli ruch jest możliwy. W przeciwnym wypadku zwraca <code>false</code>.
      */
-    private boolean tryMove(Shape newPiece, int newX, int newY)
+    private boolean tryMoving(Shape newPiece, int newX, int newY)
     {
         for (int i = 0; i < 4; ++i) {
             int x = newX + newPiece.x(i);
             int y = newY - newPiece.y(i);
             if (x<0||x>=BoardWidth || y < 0 || y >= BoardHeight)
                 return false;
-            if (shapeAt(x, y) != Tetrominoes.NoShape)
+            if (shapeAt(x, y) != Shape.TetroShapes.NoShape)
                 return false;
 
 
@@ -394,9 +390,9 @@ public class Board extends JPanel implements ActionListener {
 
 
 
-        curX = newX;
-        curY = newY;
-        curPiece = newPiece;
+        currentX = newX;
+        currentY = newY;
+        currentPiece = newPiece;
         repaint();
         return true;
     }
@@ -412,7 +408,7 @@ public class Board extends JPanel implements ActionListener {
             boolean lineIsFull = true;
 
             for (int j = 0; j < BoardWidth; ++j) {
-                if (shapeAt(j, i) == Tetrominoes.NoShape) {
+                if (shapeAt(j, i) == Shape.TetroShapes.NoShape) {
                     lineIsFull = false;
                     break;
                 }
@@ -433,7 +429,7 @@ public class Board extends JPanel implements ActionListener {
             }
             pointsbar.setText("Score: " + String.valueOf(score));
             isFallingFinished = true;
-            curPiece.setShape(Tetrominoes.NoShape);
+            currentPiece.setShape(Shape.TetroShapes.NoShape);
             repaint();
         }
     }
@@ -445,7 +441,7 @@ public class Board extends JPanel implements ActionListener {
      * @param y  współrzędna y lewego górnego rogu bloku
      * @param shape  kształt klocka którego blok rysujemy
      */
-    private void drawSquare(Graphics g, int x, int y, Tetrominoes shape)
+    private void drawBlock(Graphics g, int x, int y, Shape.TetroShapes shape)
     {
         Color colors[] = { new Color(0, 0, 0), new Color(255, 200, 181),
                 new Color(255, 180, 181), new Color(255, 160, 181),
@@ -472,12 +468,13 @@ public class Board extends JPanel implements ActionListener {
     }
 
     /**
-     * Metoda restartujaca grę.
+     * Metoda restartująca grę.
      */
     void restart() {
         if(!timer.isRunning())
             timer.start();
         clearBoard();
+        if (isPaused)
         pause();
         start();
     }
@@ -495,7 +492,7 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Kalsa odpowiadająca za posługiwanie się klawiaturą.
      */
-    class TAdapter extends KeyAdapter {
+    class MyAdapter extends KeyAdapter {
 
         /**
          * Metoda mówiąca jak program reaguje na naciskanie przycisków na klawiaturze.
@@ -503,7 +500,7 @@ public class Board extends JPanel implements ActionListener {
          */
         public void keyPressed(KeyEvent e) {
 
-            if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
+            if (!isStarted || currentPiece.getShape() == Shape.TetroShapes.NoShape) {
                 return;
             }
 
@@ -519,16 +516,16 @@ public class Board extends JPanel implements ActionListener {
 
             switch (keycode) {
                 case KeyEvent.VK_LEFT:
-                    tryMove(curPiece, curX - 1, curY);
+                    tryMoving(currentPiece, currentX - 1, currentY);
                     break;
                 case KeyEvent.VK_RIGHT:
-                    tryMove(curPiece, curX + 1, curY);
+                    tryMoving(currentPiece, currentX + 1, currentY);
                     break;
                 case KeyEvent.VK_DOWN:
                     oneLineDown();
                     break;
                 case KeyEvent.VK_UP:
-                    tryMove(curPiece.rotate(), curX, curY);
+                    tryMoving(currentPiece.rotate(), currentX, currentY);
                     break;
                 case KeyEvent.VK_SPACE:
                     dropDown();
