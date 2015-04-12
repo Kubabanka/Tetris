@@ -7,7 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
@@ -90,16 +92,16 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Konstruktor. Tworzy planszę do gry.
-     * @param neighbour kontener zawierający planszę.
+     * @param parent kontener zawierający planszę.
      */
-    public Board(SidePanel neighbour) {
+    public Board(Tetris parent) {
 
         setFocusable(true);
         curPiece = new Shape();
         timer = new Timer(400, this);
         timer.start();
 
-        statusbar = neighbour.getStatusBar();
+        statusbar = parent.getSidePanel().getStatusBar();
         board = new Tetrominoes[BoardWidth * BoardHeight];
         addKeyListener(new TAdapter());
         clearBoard();
@@ -111,22 +113,21 @@ public class Board extends JPanel implements ActionListener {
      * @throws IOException
      */
 
-    private void LoadFromFile() throws IOException {
+    public static void LoadFromFile() throws IOException {
         java.util.Properties properties = new java.util.Properties();
-        Scanner input = null;
+        InputStream input = null;
         try {
-            input = new Scanner(Paths.get("config.properties"));
-            // input = new FileInputStream("config.properties");
-            // properties.load(input);
+            input = new FileInputStream("config.properties");
+            properties.load(input);
             String _linescore = properties.getProperty("linescore");
             String _block_score = properties.getProperty("block_score");
-            String _max_width = properties.getProperty("max_width");
-            String _max_height = properties.getProperty("max_height");
-
+            String _width = properties.getProperty("max_width");
+            String _height = properties.getProperty("max_height");
+            String _player_name = properties.getProperty("player_name");
             String _fine = properties.getProperty("fine");
             String _level_score = properties.getProperty("level_score");
-            String _speed = properties.getProperty("max_power_up");
-
+            String _speed = properties.getProperty("speed");
+            String _max_power_up = properties.getProperty("max_power_up");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -197,7 +198,7 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda zatrzymująca grę.
      */
-    private void pause()
+    void pause()
     {
         if (!isStarted)
             return;
@@ -412,7 +413,7 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda restartujaca grę.
      */
-    private void restart(){
+    void restart() {
         if(!timer.isRunning())
             timer.start();
         clearBoard();

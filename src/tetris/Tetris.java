@@ -2,24 +2,47 @@ package tetris;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  * Główna klasa programu. Jest to okno w którym wyświetla się nasza gra.
  */
 public class Tetris extends JFrame {
+    /**
+     * Pasek boczny GUI.
+     */
+    private SidePanel aSidePanel;
+    /**
+     * Plansza z grą.
+     */
+    private Board board;
 
-    SidePanel sidePanel = new SidePanel();
+    /**
+     * @return Zwraca panel boczny.
+     */
+    public SidePanel getSidePanel() {
+        return aSidePanel;
+    }
+
+    /**
+     * @return Zwraca plansze.
+     */
+    public Board getBoard() {
+        return board;
+    }
 
     /**
      * Konstruktor tworzący naszą grę i GUI.
      */
     public Tetris() {
 
-        Board board = new Board(sidePanel);
+        aSidePanel = new SidePanel();
+        board = new Board(this);
+
+        aSidePanel.setBoard(board);
+
+        add(aSidePanel, BorderLayout.EAST);
         add(board);
-        add(sidePanel, BorderLayout.EAST);
         board.start();
 
         setSize(300, 400);
