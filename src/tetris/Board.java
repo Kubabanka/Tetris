@@ -87,16 +87,16 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Konstruktor. Tworzy planszę do gry.
-     * @param parent kontener zawierający planszę.
+     * @param neighbour kontener zawierający planszę.
      */
-    public Board(Tetris parent) {
+    public Board(SidePanel neighbour) {
 
         setFocusable(true);
         curPiece = new Shape();
         timer = new Timer(400, this);
         timer.start();
 
-        statusbar =  parent.getStatusBar();
+        statusbar = neighbour.getStatusBar();
         board = new Tetrominoes[BoardWidth * BoardHeight];
         addKeyListener(new TAdapter());
         clearBoard();
