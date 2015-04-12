@@ -146,7 +146,7 @@ public class Board extends JPanel implements ActionListener {
      * @throws IOException
      */
 
-    private void LoadFromFile() throws IOException {
+    public void LoadFromFile() throws IOException {
         java.util.Properties properties = new java.util.Properties();
         InputStream input = null;
         try {
