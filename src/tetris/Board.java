@@ -22,7 +22,7 @@ import tetris.Shape.Tetrominoes;
 public class Board extends JPanel implements ActionListener {
 
 
-    /* TODO dodać restart, wczytywanie z pliku, GUI!!, power-upy. */
+    /* TODO dodać  wczytywanie z pliku, GUI!!, power-upy. */
 
     /**
      * Stała mówiąca ile bloków szerokości ma plansza.
@@ -374,7 +374,12 @@ public class Board extends JPanel implements ActionListener {
         if(!timer.isRunning())
             timer.start();
         clearBoard();
-        start();
+        newPiece();
+        numLinesRemoved = 0;
+        if (isPaused)
+            pause();
+        isStarted = true;
+
     }
 
     /**
@@ -387,20 +392,29 @@ public class Board extends JPanel implements ActionListener {
          * @param e zdarzenie wygenerowane przez klawiaturę
          */
         public void keyPressed(KeyEvent e) {
-
+            int keycode = e.getKeyCode();
             if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
-                return;
+                if (keycode == 'r' || keycode == 'R') {
+                    restart();
+                    statusbar.setText(String.valueOf(numLinesRemoved));
+                } else
+                    return;
             }
 
-            int keycode = e.getKeyCode();
+
 
             if (keycode == 'p' || keycode == 'P') {
                 pause();
                 return;
             }
 
-            if (isPaused)
-                return;
+            if (isPaused) {
+                if (keycode == 'r' || keycode == 'R')
+                    restart();
+                else
+                    return;
+            }
+
 
             switch (keycode) {
                 case KeyEvent.VK_LEFT:
