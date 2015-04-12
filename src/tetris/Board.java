@@ -426,6 +426,12 @@ public class Board extends JPanel implements ActionListener {
                 case 'D':
                     oneLineDown();
                     break;
+                case 'r':
+                    restart();
+                    break;
+                case 'R':
+                    restart();
+                    break;
             }
 
         }
