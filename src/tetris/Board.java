@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -89,7 +92,7 @@ public class Board extends JPanel implements ActionListener {
      * Konstruktor. Tworzy planszę do gry.
      * @param neighbour kontener zawierający planszę.
      */
-    public Board(Tetris parent) {
+    public Board(SidePanel neighbour) {
 
         setFocusable(true);
         curPiece = new Shape();
@@ -101,6 +104,45 @@ public class Board extends JPanel implements ActionListener {
         addKeyListener(new TAdapter());
         clearBoard();
     }
+
+    /**
+     * Metoda wczytująca konfigurację z pliku config.properties
+     *
+     * @throws IOException
+     */
+
+    private void LoadFromFile() throws IOException {
+        java.util.Properties properties = new java.util.Properties();
+        Scanner input = null;
+        try {
+            input = new Scanner(Paths.get("config.properties"));
+            // input = new FileInputStream("config.properties");
+            // properties.load(input);
+            String _linescore = properties.getProperty("linescore");
+            String _block_score = properties.getProperty("block_score");
+            String _max_width = properties.getProperty("max_width");
+            String _max_height = properties.getProperty("max_height");
+
+            String _fine = properties.getProperty("fine");
+            String _level_score = properties.getProperty("level_score");
+            String _speed = properties.getProperty("max_power_up");
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+
 
     /**
      * Metoda sprawdzająca czy klocek skończył już opadać.
@@ -266,7 +308,7 @@ public class Board extends JPanel implements ActionListener {
             curPiece.setShape(Tetrominoes.NoShape);
             timer.stop();
             isStarted = false;
-            statusbar.setText("game over");
+            statusbar.setText("GAME OVER!");
         }
     }
 

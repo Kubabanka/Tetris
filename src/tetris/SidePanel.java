@@ -21,7 +21,7 @@ public class SidePanel extends JPanel {
     /**
      * Etykieta do wyświetlania wyniku/stanu gry.
      */
-    JLabel statusbar;
+    JLabel statusbar = new JLabel("0");
 
     /**
      * Przycisk restart.
