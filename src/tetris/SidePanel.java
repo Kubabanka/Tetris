@@ -24,7 +24,7 @@ public class SidePanel extends JPanel {
     /**
      * Etykieta do wyświetlania wyniku/stanu gry.
      */
-    JLabel statusbar = new JLabel("Score: 0");
+    JLabel statusbar = new JLabel("");
 
     /**
      * Plansza do gry.
@@ -35,6 +35,18 @@ public class SidePanel extends JPanel {
      * Przycisk restart.
      */
     JButton restartButton;// = new JButton("Restart");
+
+    /**
+     * Etykieta do wyświetlania wyniku.
+     */
+    JLabel pointsbar = new JLabel("");
+
+    /**
+     * @return Zwraca etykietę wyniku.
+     */
+    public JLabel getPointsbar() {
+        return pointsbar;
+    }
 
     /**
      * Konstruktor tworzacy panel.
@@ -50,6 +62,7 @@ public class SidePanel extends JPanel {
         add(newGameButton);
         add(pauseButton);
         add(restartButton);
+        add(pointsbar);
         add(statusbar);
         setBorder(new EtchedBorder());
         setSize(100, 400);

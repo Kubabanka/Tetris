@@ -103,9 +103,14 @@ public class Board extends JPanel implements ActionListener {
     int maxPowerUp;
 
     /**
-     * Etykieta do wyświetlania wyniku/stanu gry.
+     * Etykieta do wyświetlania stanu gry.
      */
     JLabel statusbar;
+
+    /**
+     * Etykieta do wyświetlania wyniku.
+     */
+    JLabel pointsbar;
 
     /**
      * Aktualny spadający klocek.
@@ -130,10 +135,15 @@ public class Board extends JPanel implements ActionListener {
     public Board(Tetris parent) {
 
         setFocusable(true);
+        try {
+            LoadFromFile();
+        } catch (Exception e) {
+            System.out.println("Blad wczytania pliku");
+        }
         curPiece = new Shape();
-        timer = new Timer(400, this);
+        timer = new Timer(speed, this);
         timer.start();
-
+        pointsbar = parent.getSidePanel().getPointsbar();
         statusbar = parent.getSidePanel().getStatusBar();
         board = new Tetrominoes[BoardWidth * BoardHeight];
         addKeyListener(new TAdapter());
@@ -232,12 +242,14 @@ public class Board extends JPanel implements ActionListener {
 
         isStarted = true;
         isFallingFinished = false;
-        score = 0;
         clearBoard();
-
+        score = 0;
+        statusbar.setText("");
+        pointsbar.setText("Score: " + score);
         newPiece();
         timer.start();
     }
+
 
     /**
      * Metoda zatrzymująca grę.
@@ -250,10 +262,11 @@ public class Board extends JPanel implements ActionListener {
         isPaused = !isPaused;
         if (isPaused) {
             timer.stop();
-            statusbar.setText("paused");
+            statusbar.setText("Paused");
+            pointsbar.setText("Score: " + score);
         } else {
             timer.start();
-            statusbar.setText(String.valueOf(score));
+            statusbar.setText("");
         }
         repaint();
     }
@@ -353,7 +366,8 @@ public class Board extends JPanel implements ActionListener {
             curPiece.setShape(Tetrominoes.NoShape);
             timer.stop();
             isStarted = false;
-            statusbar.setText("GAME OVER!");
+            statusbar.setText("<html>GAME OVER!");
+            pointsbar.setText("Score:" + score);
         }
     }
 
@@ -414,8 +428,10 @@ public class Board extends JPanel implements ActionListener {
         }
 
         if (numFullLines > 0) {
-            score += numFullLines;
-            statusbar.setText(String.valueOf(score));
+            for (int z = 1; z <= numFullLines; z++) {
+                score += z * lineScore;
+            }
+            pointsbar.setText("Score: " + String.valueOf(score));
             isFallingFinished = true;
             curPiece.setShape(Tetrominoes.NoShape);
             repaint();
@@ -462,7 +478,18 @@ public class Board extends JPanel implements ActionListener {
         if(!timer.isRunning())
             timer.start();
         clearBoard();
+        pause();
         start();
+    }
+
+    /**
+     * Metoda aktywujaca power_up
+     */
+    private void activatePowerUp() {
+        if (score > 0)
+            score -= penalty;
+        pointsbar.setText("Score: " + score);
+        newPiece();
     }
 
     /**
@@ -507,10 +534,10 @@ public class Board extends JPanel implements ActionListener {
                     dropDown();
                     break;
                 case 'd':
-                    oneLineDown();
+                    activatePowerUp();
                     break;
                 case 'D':
-                    oneLineDown();
+                    activatePowerUp();
                     break;
                 case 'r':
                     restart();
