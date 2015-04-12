@@ -13,7 +13,7 @@ public class Shape {
      **/
     enum Tetrominoes {
         NoShape, ZShape, SShape, LineShape,
-        TShape, SquareShape, LShape, MirroredLShape
+        TShape, SquareShape, LShape, MirroredLShape, DotShape
     };
 
     /**
@@ -59,7 +59,8 @@ public class Shape {
                 {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},//TShape
                 {{0, 0}, {1, 0}, {0, 1}, {1, 1}},//SquareShape
                 {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},//LShape
-                {{1, -1}, {0, -1}, {0, 0}, {0, 1}}//MirroredLShape
+                {{1, -1}, {0, -1}, {0, 0}, {0, 1}},//MirroredLShape
+                {{0, 1}, {0, 1}, {0, 1}, {0, 1}} //kropka?
         };
 
         //ustalanie ksztaltu aktualnego klocka i==x || y j==ktore
@@ -121,7 +122,7 @@ public class Shape {
      */
     public void setRandomShape() {
         Random r = new Random();
-        int x = Math.abs(r.nextInt()) % 7 + 1;
+        int x = Math.abs(r.nextInt()) % 8 + 1;
         Tetrominoes[] values = Tetrominoes.values();
         setShape(values[x]);
     }
