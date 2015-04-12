@@ -15,6 +15,7 @@ import javax.swing.Timer;
 import tetris.Shape.Tetrominoes;
 /**
  * halo halo Bańka słychać mnie? heloł?
+ * kolejna zmiana:(
  */
 
 /**
