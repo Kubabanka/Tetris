@@ -7,9 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -90,8 +87,7 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Konstruktor. Tworzy planszę do gry.
-     *
-     * @param parent kontener zawierający planszę.
+     * @param neighbour kontener zawierający planszę.
      */
     public Board(Tetris parent) {
 
@@ -100,53 +96,15 @@ public class Board extends JPanel implements ActionListener {
         timer = new Timer(400, this);
         timer.start();
 
-        statusbar = parent.getStatusBar();
+        statusbar = neighbour.getStatusBar();
         board = new Tetrominoes[BoardWidth * BoardHeight];
         addKeyListener(new TAdapter());
         clearBoard();
     }
 
     /**
-     * Metoda wczytująca konfigurację z pliku config.properties
-     *
-     * @throws IOException
-     */
-
-    private void LoadFromFile() throws IOException {
-        java.util.Properties properties = new java.util.Properties();
-        Scanner input = null;
-        try {
-            input = new Scanner(Paths.get("config.properties"));
-            // input = new FileInputStream("config.properties");
-            // properties.load(input);
-            String _linescore = properties.getProperty("linescore");
-            String _block_score = properties.getProperty("block_score");
-            String _max_width = properties.getProperty("max_width");
-            String _max_height = properties.getProperty("max_height");
-
-            String _fine = properties.getProperty("fine");
-            String _level_score = properties.getProperty("level_score");
-            String _speed = properties.getProperty("max_power_up");
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-    /**
      * Metoda sprawdzająca czy klocek skończył już opadać.
      * Jeżeli tak tworzy nowy klocek w przeciwnym wypadku klocek kontynuuje opadanie.
-     *
      * @param e zdarzenie wygenerowane przez zegar.
      */
     public void actionPerformed(ActionEvent e) {
@@ -159,32 +117,29 @@ public class Board extends JPanel implements ActionListener {
     }
 
     /**
+     *
      * @return Zwraca dynamicznie obliczaną szerokość bloku klocka
      */
-    int squareWidth() {
-        return (int) getSize().getWidth() / BoardWidth;
-    }
+    int squareWidth() { return (int) getSize().getWidth() / BoardWidth; }
 
     /**
+     *
      * @return Zwraca dynamicznie obliczaną wysokość bloku klocka
      */
-    int squareHeight() {
-        return (int) getSize().getHeight() / BoardHeight;
-    }
+    int squareHeight() { return (int) getSize().getHeight() / BoardHeight; }
 
     /**
-     * @param x współrzędna x planszy
-     * @param y współrzędna y planszy
+     *  @param x współrzędna x planszy
+     *  @param y  współrzędna y planszy
      * @return Kształt z jakiego pochodzi blok klocka na współrzędnych (x,y)
      */
-    Tetrominoes shapeAt(int x, int y) {
-        return board[(y * BoardWidth) + x];
-    }
+    Tetrominoes shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
 
     /**
      * Metoda rozpoczynająca grę.
      */
-    public void start() {
+    public void start()
+    {
         if (isPaused)
             return;
 
@@ -200,7 +155,8 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda zatrzymująca grę.
      */
-    private void pause() {
+    private void pause()
+    {
         if (!isStarted)
             return;
 
@@ -217,10 +173,10 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Metoda rysująca planszę go gry.
-     *
-     * @param g obiekt potrzebny do rysowania
+     * @param g  obiekt potrzebny do rysowania
      */
-    public void paint(Graphics g) {
+    public void paint(Graphics g)
+    {
         super.paint(g);
 
         Dimension size = getSize();
@@ -231,7 +187,7 @@ public class Board extends JPanel implements ActionListener {
             for (int j = 0; j < BoardWidth; ++j) {
                 Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
                 if (shape != Tetrominoes.NoShape)
-                    drawSquare(g, 0 + j * (squareWidth()),
+                    drawSquare(g, 0 + j * squareWidth(),
                             boardTop + i * squareHeight(), shape);
             }
         }
@@ -250,7 +206,8 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda powodująca natychmiastowe opadniecie klocka.
      */
-    private void dropDown() {
+    private void dropDown()
+    {
         int newY = curY;
         while (newY > 0) {
             if (!tryMove(curPiece, curX, newY - 1))
@@ -263,7 +220,8 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda powodująca opadnięcie klocka o jego wysokość.
      */
-    private void oneLineDown() {
+    private void oneLineDown()
+    {
         if (!tryMove(curPiece, curX, curY - 1))
             pieceDropped();
     }
@@ -271,7 +229,8 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda czyszcząca planszę z klocków które już upadły.
      */
-    private void clearBoard() {
+    private void clearBoard()
+    {
         for (int i = 0; i < BoardHeight * BoardWidth; ++i)
             board[i] = Tetrominoes.NoShape;
     }
@@ -280,7 +239,8 @@ public class Board extends JPanel implements ActionListener {
      * Metoda wywoływana po skończonym opadaniu klocka.
      * Aktualizuje ona tablicę <code>board</code>.
      */
-    private void pieceDropped() {
+    private void pieceDropped()
+    {
         for (int i = 0; i < 4; ++i) {
             int x = curX + curPiece.x(i);
             int y = curY - curPiece.y(i);
@@ -296,39 +256,41 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda tworząca nowy, losowy klocek.
      */
-    private void newPiece() {
+    private void newPiece()
+    {
         curPiece.setRandomShape();
-        curX = BoardWidth / 2 + curPiece.minX();
+        curX = BoardWidth / 2  + curPiece.minX();
         curY = BoardHeight - 1 + curPiece.minY();
 
         if (!tryMove(curPiece, curX, curY)) {
             curPiece.setShape(Tetrominoes.NoShape);
             timer.stop();
             isStarted = false;
-            statusbar.setText("GAME OVER!");
+            statusbar.setText("game over");
         }
     }
 
     /**
      * Metoda sprawdzająca czy opisany ruch jest możliwy.
      * Jeżeli tak wykonuje ona go.
-     *
      * @param newPiece klocek który chcemy poruszyć
-     * @param newX     nowa współrzędna x na planszy
-     * @param newY     nowa współrzędna y na planszy
+     * @param newX nowa współrzędna x na planszy
+     * @param newY nowa współrzędna y na planszy
      * @return <code>true</code> jeżeli ruch jest możliwy. W przeciwnym wypadku zwraca <code>false</code>.
      */
-    private boolean tryMove(Shape newPiece, int newX, int newY) {
+    private boolean tryMove(Shape newPiece, int newX, int newY)
+    {
         for (int i = 0; i < 4; ++i) {
             int x = newX + newPiece.x(i);
             int y = newY - newPiece.y(i);
-            if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
+            if (x<0||x>=BoardWidth || y < 0 || y >= BoardHeight)
                 return false;
             if (shapeAt(x, y) != Tetrominoes.NoShape)
                 return false;
 
 
         }
+
 
 
         curX = newX;
@@ -341,7 +303,8 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda usuwająca zapełnione linie pozime planszy i przydzielająca punkty.
      */
-    private void removeFullLines() {
+    private void removeFullLines()
+    {
         int numFullLines = 0;
 
         for (int i = BoardHeight - 1; i >= 0; --i) {
@@ -374,14 +337,14 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Metoda rysująca bloki klocków Tetris.
-     *
-     * @param g     obiekt służączy do rysowania
-     * @param x     współrzędna x lewego górnego rogu bloku
-     * @param y     współrzędna y lewego górnego rogu bloku
-     * @param shape kształt klocka którego blok rysujemy
+     * @param g  obiekt służączy do rysowania
+     * @param x współrzędna x lewego górnego rogu bloku
+     * @param y  współrzędna y lewego górnego rogu bloku
+     * @param shape  kształt klocka którego blok rysujemy
      */
-    private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
-        Color colors[] = {new Color(0, 0, 0), new Color(204, 102, 102),
+    private void drawSquare(Graphics g, int x, int y, Tetrominoes shape)
+    {
+        Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102),
                 new Color(102, 204, 102), new Color(102, 102, 204),
                 new Color(204, 204, 102), new Color(204, 102, 204),
                 new Color(102, 204, 204), new Color(218, 170, 0), new Color(120, 120, 120)
@@ -407,13 +370,12 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Metoda restartujaca grę.
      */
-    private void restart() {
-        if (!timer.isRunning())
+    private void restart(){
+        if(!timer.isRunning())
             timer.start();
         clearBoard();
         start();
     }
-
 
     /**
      * Kalsa odpowiadająca za posługiwanie się klawiaturą.
@@ -422,7 +384,6 @@ public class Board extends JPanel implements ActionListener {
 
         /**
          * Metoda mówiąca jak program reaguje na naciskanie przycisków na klawiaturze.
-         *
          * @param e zdarzenie wygenerowane przez klawiaturę
          */
         public void keyPressed(KeyEvent e) {

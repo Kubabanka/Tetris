@@ -10,34 +10,23 @@ import javax.swing.JLabel;
  */
 public class Tetris extends JFrame {
 
-    /**
-     * Etykieta do wyświetlania wyniku/stanu gry.
-     */
-    JLabel statusbar;
+    SidePanel sidePanel = new SidePanel();
 
     /**
      * Konstruktor tworzący naszą grę i GUI.
      */
     public Tetris() {
 
-        statusbar = new JLabel(" 0");
-        add(statusbar, BorderLayout.SOUTH);
-        Board board = new Board(this);
+        Board board = new Board(sidePanel);
         add(board);
+        add(sidePanel, BorderLayout.EAST);
         board.start();
 
-        setSize(200, 400);
+        setSize(300, 400);
         setTitle("Tetris");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    /**
-     *
-     * @return Metoda zwracająca etykietę z wynikiem.
-     */
-    public JLabel getStatusBar() {
-        return statusbar;
-    }
 
     /**
      * Główna funkcja programu.
