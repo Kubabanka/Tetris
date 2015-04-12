@@ -10,8 +10,6 @@ import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.Scanner;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,17 +25,17 @@ import tetris.Shape.Tetrominoes;
 public class Board extends JPanel implements ActionListener {
 
 
-    /* TODO dodać restart, wczytywanie z pliku, GUI!!, power-upy. */
+    /* TODO wczytywanie z pliku, power-upy. */
 
     /**
      * Stała mówiąca ile bloków szerokości ma plansza.
      */
-    final int BoardWidth = 10;
+    int BoardWidth = 10;
 
     /**
      * Stała mówiąca ile bloków wysokości ma plansza.
      */
-    final int BoardHeight = 22;
+    int BoardHeight = 22;
 
     /**
      * Timer służący do tworzenia zdarzeń.
@@ -62,7 +60,7 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Zmienna przechowująca ilość wykasowanych linii.
      */
-    int numLinesRemoved = 0;
+    int score = 0;
 
     /**
      * Aktualna współrzędna x na planszy
@@ -75,12 +73,42 @@ public class Board extends JPanel implements ActionListener {
     int curY = 0;
 
     /**
+     * Ilość punktów za skasowanie jednej linii.
+     */
+    int lineScore;
+
+    /**
+     * Liczba punktów za zniszczenie jednego bloku przy wybuchu.
+     */
+    int blockScore;
+
+    /**
+     * Kara za użycie power-upu.
+     */
+    int penalty;
+
+    /**
+     * Liczba punktów za przejście na kolejny poziom.
+     */
+    int levelScore;
+
+    /**
+     * Prędkość opadania klocka.
+     */
+    int speed;
+
+    /**
+     * Maksymalna ilość power-upów.
+     */
+    int maxPowerUp;
+
+    /**
      * Etykieta do wyświetlania wyniku/stanu gry.
      */
     JLabel statusbar;
 
     /**
-     * Aktualny spadający klocek
+     * Aktualny spadający klocek.
      */
     Shape curPiece;
 
@@ -88,6 +116,11 @@ public class Board extends JPanel implements ActionListener {
      * Tablica klocków które skończyły opadanie.
      */
     Tetrominoes[] board;
+
+    /**
+     * Nazwa zawodnika.
+     */
+    String playerName;
 
 
     /**
@@ -113,21 +146,32 @@ public class Board extends JPanel implements ActionListener {
      * @throws IOException
      */
 
-    public static void LoadFromFile() throws IOException {
+    private void LoadFromFile() throws IOException {
         java.util.Properties properties = new java.util.Properties();
         InputStream input = null;
         try {
             input = new FileInputStream("config.properties");
             properties.load(input);
-            String _linescore = properties.getProperty("linescore");
-            String _block_score = properties.getProperty("block_score");
-            String _width = properties.getProperty("max_width");
-            String _height = properties.getProperty("max_height");
-            String _player_name = properties.getProperty("player_name");
-            String _fine = properties.getProperty("fine");
-            String _level_score = properties.getProperty("level_score");
+            String _lineScore = properties.getProperty("lineScore");
+            String _blockScore = properties.getProperty("blockScore");
+            String _width = properties.getProperty("width");
+            String _height = properties.getProperty("height");
+            String _penalty = properties.getProperty("penalty");
+            String _levelScore = properties.getProperty("levelScore");
             String _speed = properties.getProperty("speed");
-            String _max_power_up = properties.getProperty("max_power_up");
+            String _maxPowerUp = properties.getProperty("maxPowerUp");
+
+            playerName = properties.getProperty("playerName");
+
+            lineScore = Integer.parseInt(_lineScore);
+            blockScore = Integer.parseInt(_blockScore);
+            BoardWidth = Integer.parseInt(_width);
+            BoardHeight = Integer.parseInt(_height);
+            penalty = Integer.parseInt(_penalty);
+            levelScore = Integer.parseInt(_levelScore);
+            speed = Integer.parseInt(_speed);
+            maxPowerUp = Integer.parseInt(_maxPowerUp);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -188,7 +232,7 @@ public class Board extends JPanel implements ActionListener {
 
         isStarted = true;
         isFallingFinished = false;
-        numLinesRemoved = 0;
+        score = 0;
         clearBoard();
 
         newPiece();
@@ -209,7 +253,7 @@ public class Board extends JPanel implements ActionListener {
             statusbar.setText("paused");
         } else {
             timer.start();
-            statusbar.setText(String.valueOf(numLinesRemoved));
+            statusbar.setText(String.valueOf(score));
         }
         repaint();
     }
@@ -370,8 +414,8 @@ public class Board extends JPanel implements ActionListener {
         }
 
         if (numFullLines > 0) {
-            numLinesRemoved += numFullLines;
-            statusbar.setText(String.valueOf(numLinesRemoved));
+            score += numFullLines;
+            statusbar.setText(String.valueOf(score));
             isFallingFinished = true;
             curPiece.setShape(Tetrominoes.NoShape);
             repaint();
@@ -387,10 +431,11 @@ public class Board extends JPanel implements ActionListener {
      */
     private void drawSquare(Graphics g, int x, int y, Tetrominoes shape)
     {
-        Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102),
-                new Color(102, 204, 102), new Color(102, 102, 204),
-                new Color(204, 204, 102), new Color(204, 102, 204),
-                new Color(102, 204, 204), new Color(218, 170, 0), new Color(120, 120, 120)
+        Color colors[] = { new Color(0, 0, 0), new Color(255, 200, 181),
+                new Color(255, 180, 181), new Color(255, 160, 181),
+                new Color(255, 140, 181), new Color(255, 120, 181),
+                new Color(255, 100, 181), new Color(255, 80, 181),
+                new Color(255, 60, 181), new Color(255, 40, 181)
         };
 
 
