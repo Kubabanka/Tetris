@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>tetris</OriginalElement>
+  <nodes>
+    <node x="0.0" y="298.0">tetris.Board.TAdapter</node>
+    <node x="413.35" y="0.0">tetris.Board</node>
+    <node x="405.9649999999999" y="693.0">tetris.Shape</node>
+    <node x="895.9649999999999" y="693.0">tetris.Tetris</node>
+    <node x="0.0" y="760.0">tetris.Shape.Tetrominoes</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="tetris.Shape.Tetrominoes" target="tetris.Shape">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="tetris.Board.TAdapter" target="tetris.Board">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="613.0" y="625.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
