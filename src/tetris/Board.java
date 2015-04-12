@@ -13,6 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import tetris.Shape.Tetrominoes;
+/**
+ * halo halo Bańka słychać mnie?
+ */
 
 /**
  * Klasa odwzorywująca planszę do gry.
