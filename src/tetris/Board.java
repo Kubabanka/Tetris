@@ -1,15 +1,12 @@
 package tetris;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.geom.Line2D;
+import java.io.*;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,6 +29,12 @@ public class Board extends JPanel implements ActionListener {
      * Stała mówiąca ile bloków wysokości ma plansza.
      */
     int BoardHeight;
+
+    int scale;
+
+    int currentLevel;
+
+    int internalScore = 0;
 
     /**
      * Timer służący do tworzenia zdarzeń.
@@ -66,7 +69,7 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Aktualna współrzędna y na planszy
      */
-    int currentY = 0;
+    double currentY = 0;
 
     /**
      * Ilość punktów za skasowanie jednej linii.
@@ -162,6 +165,7 @@ public class Board extends JPanel implements ActionListener {
             String _blockScore = properties.getProperty("blockScore");
             String _width = properties.getProperty("width");
             String _height = properties.getProperty("height");
+            String _scale = properties.getProperty("scale");
             String _penalty = properties.getProperty("penalty");
             String _levelScore = properties.getProperty("levelScore");
             String _speed = properties.getProperty("speed");
@@ -173,6 +177,7 @@ public class Board extends JPanel implements ActionListener {
             blockScore = Integer.parseInt(_blockScore);
             BoardWidth = Integer.parseInt(_width);
             BoardHeight = Integer.parseInt(_height);
+            scale = Integer.parseInt(_scale);
             penalty = Integer.parseInt(_penalty);
             levelScore = Integer.parseInt(_levelScore);
             speed = Integer.parseInt(_speed);
@@ -219,14 +224,14 @@ public class Board extends JPanel implements ActionListener {
      *
      * @return Zwraca dynamicznie obliczaną wysokość bloku klocka
      */
-    int squareHeight() { return (int) getSize().getHeight() / BoardHeight; }
+    double squareHeight() { return getSize().getHeight() / BoardHeight; }
 
     /**
      *  @param x współrzędna x planszy
      *  @param y  współrzędna y planszy
      * @return Kształt z jakiego pochodzi blok klocka na współrzędnych (x,y)
      */
-    Shape.TetroShapes shapeAt(int x, int y) { return board[(y * BoardWidth) + x]; }
+    Shape.TetroShapes shapeAt(int x, double y) { return board[(int)(StrictMath.floor(y) * BoardWidth) + x]; }
 
     /**
      * Metoda rozpoczynająca grę.
@@ -239,11 +244,45 @@ public class Board extends JPanel implements ActionListener {
         isStarted = true;
         isFallingFinished = false;
         clearBoard();
+        currentLevel = 1;
+        loadLevel(currentLevel);
         score = 0;
         statusbar.setText("");
         pointsbar.setText("Score: " + score);
         newPiece();
         timer.start();
+    }
+
+    private void loadLevel(int levelNumber) {
+        BufferedWriter levelWriter = null;
+        try {
+            BufferedReader levelParser = new BufferedReader(new FileReader(new File("levels/level" + levelNumber + ".eiti")));
+            levelWriter = new BufferedWriter(new FileWriter(new File("levels/level" + levelNumber + ".out")));
+
+            String line;
+            int row = BoardHeight - 1;
+            while ((line = levelParser.readLine()) != null) {
+                String[] shapesNumbers = line.split(" ");
+                int tetroShape;
+
+                for (int i = 0; i < shapesNumbers.length; ++i) {
+                    tetroShape = Integer.parseInt(shapesNumbers[i]);
+                    board[row * BoardWidth + i] = Shape.TetroShapes.values()[tetroShape];
+                }
+
+                --row;
+            }
+        } catch (IOException e) {
+
+        } finally {
+            if (levelWriter != null) {
+                try {
+                    levelWriter.close();
+                } catch (IOException e) {
+                    ;
+                }
+            }
+        }
     }
 
 
@@ -276,7 +315,7 @@ public class Board extends JPanel implements ActionListener {
         super.paint(g);
 
         Dimension size = getSize();
-        int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
+        double boardTop = size.getHeight() - BoardHeight * squareHeight();
 
 
         for (int i = 0; i < BoardHeight; ++i) {
@@ -291,22 +330,22 @@ public class Board extends JPanel implements ActionListener {
         if (currentPiece.getShape() != Shape.TetroShapes.NoShape) {
             for (int i = 0; i < 4; ++i) {
                 int x = currentX + currentPiece.x(i);
-                int y = currentY - currentPiece.y(i);
+                double y = currentY - currentPiece.y(i);
                 drawBlock(g, 0 + x * squareWidth(),
                         boardTop + (BoardHeight - y - 1) * squareHeight(),
                         currentPiece.getShape());
             }
         }
-    }
+}
 
     /**
      * Metoda powodująca natychmiastowe opadniecie klocka.
      */
     private void dropDown()
     {
-        int newY = currentY;
+        double newY = currentY;
         while (newY > 0) {
-            if (!tryMoving(currentPiece, currentX, newY - 1))
+            if (!tryMoving(currentPiece, currentX, newY - squareHeight() / (scale * BoardHeight)))
                 break;
             --newY;
         }
@@ -318,7 +357,7 @@ public class Board extends JPanel implements ActionListener {
      */
     private void oneLineDown()
     {
-        if (!tryMoving(currentPiece, currentX, currentY - 1))
+        if (!tryMoving(currentPiece, currentX, currentY - squareHeight() / (scale * BoardHeight)))
             pieceDropped();
     }
 
@@ -339,8 +378,8 @@ public class Board extends JPanel implements ActionListener {
     {
         for (int i = 0; i < 4; ++i) {
             int x = currentX + currentPiece.x(i);
-            int y = currentY - currentPiece.y(i);
-            board[(y * BoardWidth) + x] = currentPiece.getShape();
+            double y = currentY - currentPiece.y(i);
+            board[((int) y * BoardWidth) + x] = currentPiece.getShape();
         }
 
         removeFullLines();
@@ -375,11 +414,12 @@ public class Board extends JPanel implements ActionListener {
      * @param newY nowa współrzędna y na planszy
      * @return <code>true</code> jeżeli ruch jest możliwy. W przeciwnym wypadku zwraca <code>false</code>.
      */
-    private boolean tryMoving(Shape newPiece, int newX, int newY)
+    int counter = 0;
+    private boolean tryMoving(Shape newPiece, int newX, double newY)
     {
         for (int i = 0; i < 4; ++i) {
             int x = newX + newPiece.x(i);
-            int y = newY - newPiece.y(i);
+            double y = newY - newPiece.y(i);
             if (x<0||x>=BoardWidth || y < 0 || y >= BoardHeight)
                 return false;
             if (shapeAt(x, y) != Shape.TetroShapes.NoShape)
@@ -388,7 +428,9 @@ public class Board extends JPanel implements ActionListener {
 
         }
 
-
+        if (newY != currentY) {
+            statusbar.setText("" + ++counter);
+        }
 
         currentX = newX;
         currentY = newY;
@@ -426,7 +468,15 @@ public class Board extends JPanel implements ActionListener {
         if (numFullLines > 0) {
             for (int z = 1; z <= numFullLines; z++) {
                 score += z * lineScore;
+                internalScore += z * lineScore;
             }
+
+            if (internalScore >= levelScore) {
+                internalScore = 0;
+                ++currentLevel;
+                loadLevel(currentLevel);
+            }
+
             pointsbar.setText("Score: " + String.valueOf(score));
             isFallingFinished = true;
             currentPiece.setShape(Shape.TetroShapes.NoShape);
@@ -441,7 +491,7 @@ public class Board extends JPanel implements ActionListener {
      * @param y  współrzędna y lewego górnego rogu bloku
      * @param shape  kształt klocka którego blok rysujemy
      */
-    private void drawBlock(Graphics g, int x, int y, Shape.TetroShapes shape)
+    private void drawBlock(Graphics g, int x, double y, Shape.TetroShapes shape)
     {
         Color colors[] = { new Color(0, 0, 0), new Color(255, 200, 181),
                 new Color(255, 180, 181), new Color(255, 160, 181),
@@ -453,18 +503,19 @@ public class Board extends JPanel implements ActionListener {
 
         Color color = colors[shape.ordinal()];
 
-        g.setColor(color);
-        g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(color);
+        g2.fill(new Rectangle.Double(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2));
 
-        g.setColor(color.brighter());
-        g.drawLine(x, y + squareHeight() - 1, x, y);
-        g.drawLine(x, y, x + squareWidth() - 1, y);
+        g2.setColor(color.brighter());
+        g2.draw(new Line2D.Double(x, y + squareHeight() - 1, x, y));
+        g2.draw(new Line2D.Double(x, y, x + squareWidth() - 1, y));
 
-        g.setColor(color.darker());
-        g.drawLine(x + 1, y + squareHeight() - 1,
-                x + squareWidth() - 1, y + squareHeight() - 1);
-        g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1,
-                x + squareWidth() - 1, y + 1);
+        g2.setColor(color.darker());
+        g2.draw(new Line2D.Double(x + 1, y + squareHeight() - 1,
+                x + squareWidth() - 1, y + squareHeight() - 1));
+        g2.draw(new Line2D.Double(x + squareWidth() - 1, y + squareHeight() - 1,
+                x + squareWidth() - 1, y + 1));
     }
 
     /**
