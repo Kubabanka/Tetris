@@ -3,6 +3,7 @@ package tetris;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -29,7 +30,7 @@ public class SidePanel extends JPanel {
     /**
      * Plansza do gry.
      */
-    private Board board;
+    Board board;
 
     /**
      * Przycisk restart.
@@ -53,7 +54,7 @@ public class SidePanel extends JPanel {
      * Konstruktor tworzacy panel.
      */
     public SidePanel() {
-        setLayout(new GridLayout(5, 1));
+        setLayout(new GridLayout(6, 1));
         ButtonAction newGameAction = new ButtonAction("New Game", "Starts a new game");
         ButtonAction restartAction = new ButtonAction("Restart", "Restarts game");
         ButtonAction pauseAction = new ButtonAction("Pause", "Pauses game");
@@ -63,11 +64,14 @@ public class SidePanel extends JPanel {
         add(newGameButton);
         add(pauseButton);
         add(restartButton);
+        add(new ImagePanel());
         add(pointsbar);
         add(statusbar);
+
         setBorder(new EtchedBorder());
         setSize(100, 400);
     }
+
 
     /**
      * Ustawia plansze na ta z parametru
@@ -94,13 +98,13 @@ public class SidePanel extends JPanel {
         public ButtonAction(String name, String des) {
             putValue(Action.NAME, name);
             putValue(Action.SHORT_DESCRIPTION, des);
-            //putValue(Action.);
+
         }
 
         /**
          * Metoda decydująca o działaniu po przycisnięciu przycisku.
          *
-         * @param e
+         * @param e uuu
          */
         public void actionPerformed(ActionEvent e) {
 
@@ -118,6 +122,39 @@ public class SidePanel extends JPanel {
                 board.grabFocus();
 
 
+        }
+    }
+
+    private class ImagePanel extends JPanel implements  PieceChangedListener {
+
+
+        private Image [] pieces=new Image[10];
+
+        private void LoadImages(){
+            ImageIcon [] icons = new ImageIcon[10];
+            for (int i =1;i<10;i++)
+            {
+                icons[i] = new ImageIcon("images/"+i+".png");
+                pieces[i] = icons[i].getImage();
+            }
+        }
+
+        public void paintComponent(Graphics g) {
+
+            g.drawImage(pieces[board.nextPiece.getShape().ordinal()], 0, 0, null);
+        }
+
+        ImagePanel (){
+            LoadImages();
+            int w=pieces[4].getWidth(null);
+            int h=pieces[4].getHeight(null);
+            setPreferredSize(new Dimension(w,h));
+        }
+
+
+
+        public void PieceChanged(Event e) {
+            repaint();
         }
     }
 
