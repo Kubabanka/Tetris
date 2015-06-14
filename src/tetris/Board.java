@@ -12,6 +12,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 
 /**
  * Klasa odwzorowywująca planszę do gry.
@@ -318,6 +321,23 @@ public class Board extends JPanel implements ActionListener {
     }
 
     /**
+     * Metoda rysująca siatkę na planszy
+         */
+
+    private void paintGrid(Graphics gr) {
+        int k;
+        gr.setColor(this.getBackground().darker());
+        int widthOfRow = squareWidth();
+        int heightOfRow = (int) squareHeight();
+
+        for (k=0; k<getHeight(); k++)
+            gr.drawLine(0, k*heightOfRow, BoardWidth*widthOfRow, k*heightOfRow);
+
+        for (k=0; k<getWidth(); k++)
+            gr.drawLine(k*widthOfRow, 0, k*widthOfRow, BoardHeight*heightOfRow);
+    }
+
+    /**
      * Metoda rysująca planszę go gry.
      * @param g  obiekt potrzebny do rysowania
      */
@@ -328,6 +348,7 @@ public class Board extends JPanel implements ActionListener {
         Dimension size = getSize();
         double boardTop = size.getHeight() - BoardHeight * squareHeight();
 
+        paintGrid(g);
 
         for (int i = 0; i < BoardHeight; ++i) {
             for (int j = 0; j < BoardWidth; ++j) {
@@ -347,6 +368,8 @@ public class Board extends JPanel implements ActionListener {
                         currentPiece.getShape());
             }
         }
+
+
 }
 
     /**
@@ -513,11 +536,12 @@ public class Board extends JPanel implements ActionListener {
      */
     private void drawBlock(Graphics g, int x, double y, Shape.TetroShapes shape)
     {
-        Color colors[] = { new Color(0, 0, 0), new Color(255, 200, 181),
-                new Color(255, 180, 181), new Color(255, 160, 181),
-                new Color(255, 140, 181), new Color(255, 120, 181),
-                new Color(255, 100, 181), new Color(255, 80, 181),
-                new Color(255, 60, 181), new Color(255, 40, 181)
+        Color colors[] = {
+                new Color(0, 0, 0),         new Color(255, 200, 181),
+                new Color(255, 180, 181),   new Color(255, 160, 181),
+                new Color(255, 140, 181),   new Color(255, 120, 181),
+                new Color(255, 100, 181),   new Color(255, 80, 181),
+                new Color(255, 60, 181),    new Color(255, 40, 181)
         };
 
 
@@ -598,7 +622,8 @@ public class Board extends JPanel implements ActionListener {
                     Sound.play("Sounds/move.wav");
                     break;
                 case KeyEvent.VK_DOWN:
-                    oneLineDown();
+                   // oneLineDown();
+                    tryMoving(currentPiece, currentX , currentY-0.75);
                     break;
                 case KeyEvent.VK_UP:
                     tryMoving(currentPiece.rotate(), currentX, currentY);
