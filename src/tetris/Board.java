@@ -563,7 +563,7 @@ public class Board extends JPanel implements ActionListener {
     }
 
     /**
-     * Metoda restartująca grę.
+     * Metoda restartująca grę. e
      */
     void restart() {
         if(!timer.isRunning())
