@@ -105,7 +105,7 @@ public class Board extends JPanel implements ActionListener {
     int levelScore;
 
     /**
-     * Prędkość opadania klocka.
+     * Poziom prędkości opadania klocka (im wartość bliższa 1, tym klocek szybciej opada)
      */
     int speed;
 
@@ -154,7 +154,6 @@ public class Board extends JPanel implements ActionListener {
         }
         currentPiece = new Shape();
         timer = new Timer(speed, this);
-        timer.start();
         pointsbar = parent.getSidePanel().getPointsbar();
         statusbar = parent.getSidePanel().getStatusBar();
         board = new Shape.TetroShapes[BoardWidth * BoardHeight];
@@ -251,6 +250,10 @@ public class Board extends JPanel implements ActionListener {
      */
     public void start()
     {
+        try{
+            LoadFromFile();
+        }catch (Exception e){}
+
         if (isPaused)
             return;
 
@@ -263,6 +266,7 @@ public class Board extends JPanel implements ActionListener {
         statusbar.setText("");
         pointsbar.setText("Score: " + score);
         newPiece();
+        timer.restart();
         timer.start();
     }
 
@@ -466,9 +470,6 @@ public class Board extends JPanel implements ActionListener {
 
         }
 
-        if (newY != currentY) {
-            statusbar.setText("" + ++counter);
-        }
 
         currentX = newX;
         currentY = newY;
@@ -513,6 +514,7 @@ public class Board extends JPanel implements ActionListener {
 
             if (internalScore >= levelScore) {
                 internalScore = 0;
+                scale=scale-10;
                 ++currentLevel;
                 loadLevel(currentLevel);
 
@@ -571,8 +573,16 @@ public class Board extends JPanel implements ActionListener {
         clearBoard();
         if (isPaused)
         pause();
-        start();
-
+        isStarted = true;
+        isFallingFinished = false;
+        clearBoard();
+        loadLevel(currentLevel);
+        score = 0;
+        statusbar.setText("");
+        pointsbar.setText("Score: " + score);
+        newPiece();
+        timer.restart();
+        timer.start();
 
     }
 
