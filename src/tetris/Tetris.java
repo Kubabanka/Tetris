@@ -1,5 +1,14 @@
 package tetris;
 
+/**
+ * Created by Jakub Bańka & Tomasz Duda
+ * EiTI
+ * 2015
+ *
+ * @author Jakub Bańka
+ * @author Tomasz Duda
+ */
+
 import java.awt.BorderLayout;
 
 import javax.swing.*;
@@ -18,6 +27,7 @@ public class Tetris extends JFrame {
     private Board board;
 
     /**
+     * Metoda zwracąjąca panel boczny w oknie gry.
      * @return Zwraca panel boczny.
      */
     public SidePanel getSidePanel() {
@@ -25,6 +35,7 @@ public class Tetris extends JFrame {
     }
 
     /**
+     * Metoda zwracająca planszę gry.
      * @return Zwraca plansze.
      */
     public Board getBoard() {
@@ -32,11 +43,14 @@ public class Tetris extends JFrame {
     }
 
     /**
-     * Konstruktor tworzący naszą grę i GUI.
+     * Konstruktor tworzący grę i GUI.
      */
     public Tetris() {
 
         try {
+            /**
+             * Wygląd buttonów będzie dostosowywał się do systemu operacyjnego.
+             */
             UIManager.setLookAndFeel(
                     UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
@@ -57,7 +71,9 @@ public class Tetris extends JFrame {
         add(aSidePanel, BorderLayout.EAST);
         add(board);
         board.start();
-
+        /**
+         * Domyślny rozmiar okna (w pixelach)
+         */
         setSize(300, 400);
         setTitle("Tetris");
         setDefaultCloseOperation(EXIT_ON_CLOSE);

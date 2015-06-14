@@ -42,6 +42,7 @@ public class SidePanel extends JPanel {
     JLabel pointsbar = new JLabel("");
 
     /**
+     * Metoda zwracająca etykietę wyniku.
      * @return Zwraca etykietę wyniku.
      */
     public JLabel getPointsbar() {
@@ -78,7 +79,8 @@ public class SidePanel extends JPanel {
     }
 
     /**
-     * @return Metoda zwracająca etykietę z wynikiem.
+     * Metoda zwracająca etykietę ze statusem gry (np. Pause).
+     * @return Zwraca etykietę ze statusem gry.
      */
     public JLabel getStatusBar() {
         return statusbar;

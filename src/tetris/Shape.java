@@ -12,8 +12,46 @@ public class Shape {
      * Zmienna wyliczeniowa przechowujaca wszystkie mozliwe ksztalty klockow.
      **/
     enum TetroShapes {
-        NoShape, ZShape, SShape, LineShape,
-        TShape, SquareShape, LShape, MirroredLShape, DotShape, SlashShape
+        /**
+         * Pusty klocek (brak bloku)
+         */
+        NoShape,
+        /**
+         * Litera Z
+         */
+        ZShape,
+        /**
+         * Litera S
+         */
+        SShape,
+        /**
+         * Linia prosta
+         */
+        LineShape,
+        /**
+         * Litera T
+         */
+        TShape,
+        /**
+         * Kwadrat
+         */
+        SquareShape,
+        /**
+         * Litera L
+         */
+        LShape,
+        /**
+         * Odwrócona litera L
+         */
+        MirroredLShape,
+        /**
+         * Kropka
+         */
+        DotShape,
+        /**
+         * Slash /
+         */
+        SlashShape
     };
 
     /**
@@ -45,23 +83,26 @@ public class Shape {
     }
 
     /**
-     *Metoda ustawiajaca ksztalt klocka na ten podany w parametrze.
-     * @param shape oczekiwany ksztalt klocka
+     * Metoda ustawiajaca kształt klocka na ten podany w parametrze.
+     * Kształty zbudowane są z maksymalnie 4 bloków rozmieszczonych wokół środka układu współrzędnych x-y, tj. punktu {0, 0}
+     * Każdy kształt to tablica dwuwymiarowa zawierająca po 4 współrzędne dla każdego z bloków.
+     * NoShape to oznaczenie pustego kształtu.
+     * @param shape oczekiwany kształt klocka
      */
     public void setShape(TetroShapes shape) {
 
-        //ustalanie wspolrzednych poszczegolnych ksztaltow
+        // Ustalanie współrzędnych poszczególnych kształtów
         shapeTable = new int[][][]{
-                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},//NoShape
+                {{0, 0}, {0, 0}, {0, 0}, {0, 0}},   //NoShape
                 {{0, -1}, {0, 0}, {-1, 0}, {-1, 1}},//ZShape
-                {{0, -1}, {0, 0}, {1, 0}, {1, 1}},//SShape
-                {{0, -1}, {0, 0}, {0, 1}, {0, 2}},//LineShape
-                {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},//TShape
-                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},//SquareShape
+                {{0, -1}, {0, 0}, {1, 0}, {1, 1}},  //SShape
+                {{0, -1}, {0, 0}, {0, 1}, {0, 2}},  //LineShape
+                {{-1, 0}, {0, 0}, {1, 0}, {0, 1}},  //TShape
+                {{0, 0}, {1, 0}, {0, 1}, {1, 1}},   //SquareShape
                 {{-1, -1}, {0, -1}, {0, 0}, {0, 1}},//LShape
-                {{1, -1}, {0, -1}, {0, 0}, {0, 1}},//MirroredLShape
-                {{0, 1}, {0, 1}, {0, 1}, {0, 1}}, //DotShape
-                {{-1, -1}, {0, 0}, {1, 1}, {1, 1}} //SlashShape
+                {{1, -1}, {0, -1}, {0, 0}, {0, 1}}, //MirroredLShape
+                {{0, 1}, {0, 1}, {0, 1}, {0, 1}},   //DotShape
+                {{-1, -1}, {0, 0}, {1, 1}, {1, 1}}  //SlashShape
         };
 
         //ustalanie ksztaltu aktualnego klocka i==x || y j==ktore
@@ -169,7 +210,10 @@ public class Shape {
             result.setX(i, y(i));
             result.setY(i, -x(i));
         }
+
+        Sound.play("Sounds/rotate.wav");
         return result;
+
     }
 
 }

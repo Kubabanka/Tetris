@@ -30,15 +30,24 @@ public class Board extends JPanel implements ActionListener {
      */
     int BoardHeight;
 
-    /* TODO Uzupełnić komentarze */
+    /**
+     * Współczynnik skalujący - wpływa na szybkość opadania (im większy, tym wolniej opadają klocki)
+     */
     int scale;
 
+    /**
+     * Stała mówiąca o tym, na którym poziomie aktualnie jest użytkownik.
+     */
     int currentLevel;
 
+    /**
+     * Twój wynik na danym poziomie (zerowany przy rozpoczęciu kolejnego poziomu).
+     */
     int internalScore = 0;
 
     /**
      * Timer służący do tworzenia zdarzeń.
+     * Pozwala na okresowe lub jednokrotne (z zadanym opóźnieniem) uruchamianie określonych funkcji.
      */
     Timer timer;
 
@@ -53,12 +62,12 @@ public class Board extends JPanel implements ActionListener {
     boolean isStarted = false;
 
     /**
-     * Zmienna logiczna mówiąca czy zatrzymano grę.
+     * Zmienna logiczna mówiąca czy zatrzymano (zapauzowano) grę.
      */
     boolean isPaused = false;
 
     /**
-     * Zmienna przechowująca ilość wykasowanych linii.
+     * Zmienna przechowująca wynik.
      */
     int score = 0;
 
@@ -113,7 +122,7 @@ public class Board extends JPanel implements ActionListener {
     JLabel pointsbar;
 
     /**
-     * Aktualny spadający klocek.
+     * Aktualnie spadający klocek.
      */
     Shape currentPiece;
 
@@ -138,7 +147,7 @@ public class Board extends JPanel implements ActionListener {
         try {
             LoadFromFile();
         } catch (Exception e) {
-            System.out.println("Blad wczytania pliku");
+            System.out.println("Błąd wczytania pliku!");
         }
         currentPiece = new Shape();
         timer = new Timer(speed, this);
@@ -152,7 +161,6 @@ public class Board extends JPanel implements ActionListener {
 
     /**
      * Metoda wczytująca konfigurację z pliku config.properties
-     *
      * @throws IOException
      */
 
@@ -216,18 +224,19 @@ public class Board extends JPanel implements ActionListener {
     }
 
     /**
-     *
+     * Służy do obliczania szereokości bloku klocka.
      * @return Zwraca dynamicznie obliczaną szerokość bloku klocka
      */
     int squareWidth() { return (int) getSize().getWidth() / BoardWidth; }
 
     /**
-     *
+     * Służy do obliczania wysokości bloku klocka.
      * @return Zwraca dynamicznie obliczaną wysokość bloku klocka
      */
     double squareHeight() { return getSize().getHeight() / BoardHeight; }
 
     /**
+     * Metoda sprawdzająca jaki kształt z jakiego pochodzi blok klocka na danych współrzędnych.
      *  @param x współrzędna x planszy
      *  @param y  współrzędna y planszy
      * @return Kształt z jakiego pochodzi blok klocka na współrzędnych (x,y)
@@ -258,7 +267,7 @@ public class Board extends JPanel implements ActionListener {
         BufferedWriter levelWriter = null;
         try {
             BufferedReader levelParser = new BufferedReader(new FileReader(new File("levels/level" + levelNumber + ".eiti")));
-            levelWriter = new BufferedWriter(new FileWriter(new File("levels/level" + levelNumber + ".out")));
+            //levelWriter = new BufferedWriter(new FileWriter(new File("levels/level" + levelNumber + ".out")));
 
             String line;
             int row = BoardHeight - 1;
@@ -272,6 +281,7 @@ public class Board extends JPanel implements ActionListener {
                 }
 
                 --row;
+
             }
         } catch (IOException e) {
 
@@ -351,15 +361,18 @@ public class Board extends JPanel implements ActionListener {
             --newY;
         }
         pieceDropped();
+
+        Sound.play("Sounds/fall.wav");
     }
 
     /**
-     * Metoda powodująca opadnięcie klocka o jego wysokość.
+     * Metoda powodująca opadanie klocka.
      */
     private void oneLineDown()
     {
         if (!tryMoving(currentPiece, currentX, currentY - squareHeight() / (scale * BoardHeight)))
             pieceDropped();
+
     }
 
     /**
@@ -407,15 +420,16 @@ public class Board extends JPanel implements ActionListener {
         }
     }
 
+    int counter = 0;
+
     /**
      * Metoda sprawdzająca czy opisany ruch jest możliwy.
      * Jeżeli tak wykonuje ona go.
-     * @param newPiece klocek który chcemy poruszyć
+     * @param newPiece klocek, który chcemy poruszyć
      * @param newX nowa współrzędna x na planszy
      * @param newY nowa współrzędna y na planszy
      * @return <code>true</code> jeżeli ruch jest możliwy. W przeciwnym wypadku zwraca <code>false</code>.
      */
-    int counter = 0;
     private boolean tryMoving(Shape newPiece, int newX, double newY)
     {
         for (int i = 0; i < 4; ++i) {
@@ -441,7 +455,7 @@ public class Board extends JPanel implements ActionListener {
     }
 
     /**
-     * Metoda usuwająca zapełnione linie pozime planszy i przydzielająca punkty.
+     * Metoda usuwająca zapełnione linie poziome planszy i przydzielająca punkty.
      */
     private void removeFullLines()
     {
@@ -462,6 +476,8 @@ public class Board extends JPanel implements ActionListener {
                 for (int k = i; k < BoardHeight - 1; ++k) {
                     for (int j = 0; j < BoardWidth; ++j)
                         board[(k * BoardWidth) + j] = shapeAt(j, k + 1);
+
+                    Sound.play("Sounds/line.wav");
                 }
             }
         }
@@ -476,6 +492,8 @@ public class Board extends JPanel implements ActionListener {
                 internalScore = 0;
                 ++currentLevel;
                 loadLevel(currentLevel);
+
+                Sound.play("Sounds/gong_delay.wav");
             }
 
             pointsbar.setText("Score: " + String.valueOf(score));
@@ -483,6 +501,7 @@ public class Board extends JPanel implements ActionListener {
             currentPiece.setShape(Shape.TetroShapes.NoShape);
             repaint();
         }
+
     }
 
     /**
@@ -529,6 +548,8 @@ public class Board extends JPanel implements ActionListener {
         if (isPaused)
         pause();
         start();
+
+
     }
 
     /**
@@ -539,6 +560,7 @@ public class Board extends JPanel implements ActionListener {
             score -= penalty;
         pointsbar.setText("Score: " + score);
         newPiece();
+        Sound.play("Sounds/power_up.wav");
     }
 
     /**
@@ -569,9 +591,11 @@ public class Board extends JPanel implements ActionListener {
             switch (keycode) {
                 case KeyEvent.VK_LEFT:
                     tryMoving(currentPiece, currentX - 1, currentY);
+                    Sound.play("Sounds/move.wav");
                     break;
                 case KeyEvent.VK_RIGHT:
                     tryMoving(currentPiece, currentX + 1, currentY);
+                    Sound.play("Sounds/move.wav");
                     break;
                 case KeyEvent.VK_DOWN:
                     oneLineDown();
