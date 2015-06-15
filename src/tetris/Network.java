@@ -8,7 +8,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Created by toudi on 2015-06-14.
+ * Created by Tomasz Duda and Jakub Bańka on 2015-06-14.
+ */
+
+/**
+ * Komunikacja sieciowa.
  */
 public class Network {
 
@@ -19,6 +23,9 @@ public class Network {
         makeRequest("HighScoreRequest");
     }
 
+    /**
+     * Zapisanie nowego pliku konfiguracyjnego <code>config.properties</code>
+     */
     private static void WriteNewConfigFile(String s){
         PrintWriter pw=null;
         try{
@@ -42,6 +49,9 @@ public class Network {
         }
     }
 
+    /**
+     * Zapisanie nowego najlepszego wyniku do pliku <code>high_scores.eiti</code>
+     */
     private static void  WriteNewHighScore(String s) throws  IOException
     {
         PrintWriter pw=null;
@@ -56,6 +66,9 @@ public class Network {
         }
     }
 
+    /**
+     * Zapisanie poziomu.
+     */
     private static void WriteNewLevel(String s) throws  IOException
     {
         PrintWriter pw=null;
@@ -70,6 +83,11 @@ public class Network {
                 } catch (Exception e) {                }
         }
     }
+
+    /**
+     * Stworzenie żądanie.
+     * @param request Żądanie.
+     */
     public static void makeRequest(String request) {
         try {
             Socket aSocket = new Socket("localhost", 8085);
