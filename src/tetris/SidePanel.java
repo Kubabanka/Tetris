@@ -3,7 +3,6 @@ package tetris;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -23,6 +22,11 @@ public class SidePanel extends JPanel {
     JButton pauseButton;// = new JButton("Pause");
 
     /**
+     * Przycisk obsługi sieciowej.
+     */
+    JButton webButton;
+
+    /**
      * Etykieta do wyświetlania wyniku/stanu gry.
      */
     JLabel statusbar = new JLabel("");
@@ -30,7 +34,7 @@ public class SidePanel extends JPanel {
     /**
      * Plansza do gry.
      */
-    Board board;
+    private Board board;
 
     /**
      * Przycisk restart.
@@ -58,20 +62,20 @@ public class SidePanel extends JPanel {
         ButtonAction newGameAction = new ButtonAction("New Game", "Starts a new game");
         ButtonAction restartAction = new ButtonAction("Restart", "Restarts game");
         ButtonAction pauseAction = new ButtonAction("Pause", "Pauses game");
+        ButtonAction webAction = new ButtonAction("Web service", "Downloads files from server");
         newGameButton = new JButton(newGameAction);
         restartButton = new JButton(restartAction);
         pauseButton = new JButton(pauseAction);
+        webButton = new JButton(webAction);
         add(newGameButton);
         add(pauseButton);
         add(restartButton);
-        add(new ImagePanel());
+        add(webButton);
         add(pointsbar);
         add(statusbar);
-
         setBorder(new EtchedBorder());
         setSize(100, 400);
     }
-
 
     /**
      * Ustawia plansze na ta z parametru
@@ -98,13 +102,13 @@ public class SidePanel extends JPanel {
         public ButtonAction(String name, String des) {
             putValue(Action.NAME, name);
             putValue(Action.SHORT_DESCRIPTION, des);
-
+            //putValue(Action.);
         }
 
         /**
          * Metoda decydująca o działaniu po przycisnięciu przycisku.
          *
-         * @param e uuu
+         * @param e
          */
         public void actionPerformed(ActionEvent e) {
 
@@ -113,48 +117,17 @@ public class SidePanel extends JPanel {
                 board.start();
             if (command.equals("Restart")) {
                 board.restart();
-                System.out.println("restart");
             }
             if (command.equals("Pause"))
                 board.pause();
+            if (command.equals("Web service")) {
+                Network n = new Network();
+            }
 
             if (!board.isFocusOwner())
                 board.grabFocus();
 
 
-        }
-    }
-
-    private class ImagePanel extends JPanel implements  PieceChangedListener {
-
-
-        private Image [] pieces=new Image[10];
-
-        private void LoadImages(){
-            ImageIcon [] icons = new ImageIcon[10];
-            for (int i =1;i<10;i++)
-            {
-                icons[i] = new ImageIcon("images/"+i+".png");
-                pieces[i] = icons[i].getImage();
-            }
-        }
-
-        public void paintComponent(Graphics g) {
-
-            g.drawImage(pieces[board.nextPiece.getShape().ordinal()], 0, 0, null);
-        }
-
-        ImagePanel (){
-            LoadImages();
-            int w=pieces[4].getWidth(null);
-            int h=pieces[4].getHeight(null);
-            setPreferredSize(new Dimension(w,h));
-        }
-
-
-
-        public void PieceChanged(Event e) {
-            repaint();
         }
     }
 
