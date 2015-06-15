@@ -10,8 +10,11 @@ import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 /**
- * Created by toudi on 2015-06-14.
- * Klasa odpowiadajaca za komunikację z serwerem.
+ * Created by Tomasz Duda and Jakub Bańka on 2015-06-14.
+ */
+
+/**
+ * Komunikacja sieciowa.
  */
 public class Network {
     static String host;
