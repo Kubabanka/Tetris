@@ -70,7 +70,6 @@ public class Tetris extends JFrame {
 
         add(aSidePanel, BorderLayout.EAST);
         add(board);
-        board.start();
         /**
          * Domyślny rozmiar okna (w pixelach)
          */
