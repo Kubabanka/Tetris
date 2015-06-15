@@ -115,6 +115,10 @@ public class Board extends JPanel implements ActionListener {
     int maxPowerUp;
 
     /**
+     *
+     */
+    String hostIP;
+    /**
      * Etykieta do wyświetlania stanu gry.
      */
     JLabel statusbar;
@@ -138,6 +142,10 @@ public class Board extends JPanel implements ActionListener {
      * Nazwa zawodnika.
      */
     String playerName;
+    /**
+     * Mówi czy gramy online
+     */
+    boolean isOnline=false;
 
 
     /**
@@ -181,7 +189,7 @@ public class Board extends JPanel implements ActionListener {
             String _levelScore = properties.getProperty("levelScore");
             String _speed = properties.getProperty("speed");
             String _maxPowerUp = properties.getProperty("maxPowerUp");
-
+            hostIP = properties.getProperty("hostIP");
             playerName = properties.getProperty("playerName");
 
             lineScore = Integer.parseInt(_lineScore);
@@ -444,6 +452,8 @@ public class Board extends JPanel implements ActionListener {
             isStarted = false;
             statusbar.setText("GAME OVER!");
             pointsbar.setText("Score:" + score);
+            if (isOnline)
+                Network.makeRequest("NewScoreRequest "+ playerName+" "+ score);
         }
     }
 

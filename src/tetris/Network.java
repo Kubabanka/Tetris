@@ -14,11 +14,12 @@ import java.util.regex.Pattern;
  * Klasa odpowiadajaca za komunikację z serwerem.
  */
 public class Network {
-
+    static String host;
     /**
      * Konstruktor tej klasy.
      */
-    public Network(){
+    public Network(String s){
+        host=s;
         makeRequest("DefaultSettingsRequest");
         for (int i =1;i<10;i++)
         {makeRequest("LevelRequest "+i);}
@@ -47,6 +48,7 @@ public class Network {
             pw.println("levelScore="+splitted[7]);
             pw.println("speed="+splitted[8]);
             pw.println("maxPowerUp="+splitted[9]);
+            pw.println("hostIP="+splitted[10]);
         }catch (Exception e){}
         finally {
             if (pw!=null)
@@ -102,7 +104,7 @@ public class Network {
      */
     public static void makeRequest(String request) {
             try {
-            Socket aSocket = new Socket("localhost", 8087);
+            Socket aSocket = new Socket(host, 8087);
             PrintWriter out = new PrintWriter(aSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
             out.println(request);
@@ -143,6 +145,6 @@ public class Network {
     }
 
     public static void main(String[] args) {
-        Network n = new Network();
+        Network n = new Network("localhost");
     }
 }

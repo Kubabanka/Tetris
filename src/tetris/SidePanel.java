@@ -121,7 +121,8 @@ public class SidePanel extends JPanel {
             if (command.equals("Pause"))
                 board.pause();
             if (command.equals("Web service")) {
-                Network n = new Network();
+                Network n = new Network(board.hostIP);
+                board.isOnline=true;
             }
 
             if (!board.isFocusOwner())
