@@ -22,6 +22,11 @@ public class SidePanel extends JPanel {
     JButton pauseButton;// = new JButton("Pause");
 
     /**
+     * Przycisk obsługi sieciowej.
+     */
+    JButton webButton;
+
+    /**
      * Etykieta do wyświetlania wyniku/stanu gry.
      */
     JLabel statusbar = new JLabel("");
@@ -53,16 +58,19 @@ public class SidePanel extends JPanel {
      * Konstruktor tworzacy panel.
      */
     public SidePanel() {
-        setLayout(new GridLayout(5, 1));
+        setLayout(new GridLayout(6, 1));
         ButtonAction newGameAction = new ButtonAction("New Game", "Starts a new game");
         ButtonAction restartAction = new ButtonAction("Restart", "Restarts game");
         ButtonAction pauseAction = new ButtonAction("Pause", "Pauses game");
+        ButtonAction webAction = new ButtonAction("Web service", "Downloads files from server");
         newGameButton = new JButton(newGameAction);
         restartButton = new JButton(restartAction);
         pauseButton = new JButton(pauseAction);
+        webButton = new JButton(webAction);
         add(newGameButton);
         add(pauseButton);
         add(restartButton);
+        add(webButton);
         add(pointsbar);
         add(statusbar);
         setBorder(new EtchedBorder());
@@ -109,10 +117,12 @@ public class SidePanel extends JPanel {
                 board.start();
             if (command.equals("Restart")) {
                 board.restart();
-                System.out.println("restart");
             }
             if (command.equals("Pause"))
                 board.pause();
+            if (command.equals("Web service")) {
+                Network n = new Network();
+            }
 
             if (!board.isFocusOwner())
                 board.grabFocus();
